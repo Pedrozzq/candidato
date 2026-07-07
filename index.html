@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>João Silva - Pré-Candidato a Deputado Federal</title>
+    
+    <!-- SEO Básico -->
+    <meta name="description" content="Conheça as propostas e a trajetória de João Silva, seu pré-candidato a Deputado Federal. Junte-se ao nosso time!">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome (Ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts (Inter & Montserrat) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js (Para o 3D Preloader e Partículas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Tailwind Config & Custom CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        campaign: {
+                            dark: '#0f172a',    // Fundo escuro (Azul Marinho)
+                            primary: '#1e40af', // Azul Principal
+                            secondary: '#10b981', // Verde Patriótico
+                            accent: '#fbbf24',  // Amarelo/Dourado (Destaque)
+                            light: '#f8fafc'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'sweep': 'sweep 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: 1, filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))' },
+                            '50%': { opacity: .7, filter: 'drop-shadow(0 0 5px rgba(251, 191, 36, 0.2))' },
+                        },
+                        sweep: {
+                            '0%': { backgroundPosition: '-200% center' },
+                            '100%': { backgroundPosition: '200% center' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Efeito Glassmorphism Premium */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-button {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .glass-button:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(251, 191, 36, 0.5); /* Borda dourada no hover */
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.2);
+        }
+
+        /* Texto com efeito de luz passando */
+        .text-sweep {
+            background: linear-gradient(90deg, #fbbf24 0%, #ffffff 50%, #fbbf24 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: sweep 3s linear infinite;
+        }
+
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1e40af 0%, #0f172a 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease-out;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; /* Atrás de tudo */
+            pointer-events: none;
+        }
+
+        /* Animações de Scroll (Intersection Observer) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e40af; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fbbf24; 
+        }
+
+        /* ==========================================
+           NOVOS BOTÕES DE AÇÃO PREMIUM (MOBILIZAÇÃO)
+           ========================================== */
+        .action-btn {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efeito elástico suave */
+            z-index: 1;
+        }
+        
+        /* Efeito de feixe de luz brilhante passando */
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
+            transform: skewX(-20deg);
+            z-index: -1;
+            transition: all 0.7s ease;
+        }
+        
+        .action-btn:hover::before {
+            left: 150%;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        
+        .action-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Cores de brilho no Hover específicas para cada botão */
+        .btn-agenda:hover { border-color: rgba(251, 191, 36, 0.6); box-shadow: 0 10px 30px -10px rgba(251, 191, 36, 0.4); }
+        .btn-materiais:hover { border-color: rgba(96, 165, 250, 0.6); box-shadow: 0 10px 30px -10px rgba(96, 165, 250, 0.4); }
+        .btn-grupo:hover { border-color: rgba(16, 185, 129, 0.6); box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.4); }
+        .btn-voluntario:hover { border-color: rgba(192, 132, 252, 0.6); box-shadow: 0 10px 30px -10px rgba(192, 132, 252, 0.4); }
+
+        /* Botão de Doação com Pulso Contínuo */
+        .btn-donate {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.3) 0%, rgba(16, 185, 129, 0.15) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            animation: pulse-border 2s infinite;
+        }
+        
+        .btn-donate:hover {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.5) 0%, rgba(16, 185, 129, 0.3) 100%);
+            border-color: rgba(16, 185, 129, 0.8);
+            box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.5);
+            animation: none; /* Para o pulso no hover */
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
+</head>
+<body class="antialiased relative">
+
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div id="preloader-3d-canvas" class="w-full h-64 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="relative z-10 flex flex-col items-center mt-48">
+            <h2 class="text-3xl font-heading font-bold text-white mb-2 tracking-widest text-sweep">11555</h2>
+            <p class="text-sm uppercase tracking-[0.3em] text-campaign-secondary font-semibold animate-pulse">Iniciando sistema...</p>
+            
+            <!-- Barra de progresso abstrata -->
+            <div class="w-48 h-1 bg-white/20 mt-4 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-campaign-secondary to-campaign-accent w-full animate-[progress_2s_ease-in-out] origin-left"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CANVAS PARA PARTÍCULAS DE FUNDO -->
+    <div id="canvas-container"></div>
+
+    <!-- MAIN CONTENT CONTEINER -->
+    <main id="main-content" class="relative z-10 max-w-lg md:max-w-4xl mx-auto px-4 py-8 opacity-0 transition-opacity duration-1000">
+
+        <!-- HEADER / LINKTREE HERO -->
+        <header class="text-center pt-8 pb-12 reveal active">
+            <div class="relative inline-block mb-4">
+                <!-- Anel decorativo verde/amarelo -->
+                <div class="absolute inset-0 rounded-full border-4 border-t-campaign-secondary border-r-campaign-accent border-b-transparent border-l-transparent animate-spin" style="animation-duration: 3s;"></div>
+                <img src="https://placehold.co/400x400/1e40af/ffffff?text=FOTO+CANDIDATO" alt="João Silva" class="w-36 h-36 md:w-48 md:h-48 rounded-full object-cover border-4 border-campaign-dark relative z-10 shadow-2xl">
+                <!-- Badge verificado -->
+                <div class="absolute bottom-2 right-2 bg-campaign-primary text-white p-2 rounded-full border-2 border-campaign-dark z-20">
+                    <i class="fa-solid fa-check text-sm"></i>
+                </div>
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-heading font-black text-white mb-1 uppercase">João Silva</h1>
+            <h2 class="text-lg md:text-xl font-medium text-campaign-secondary tracking-widest uppercase mb-4">Deputado Federal</h2>
+            
+            <!-- NÚMERO GIGANTE -->
+            <div class="inline-block glass-panel px-8 py-3 rounded-2xl mb-6 border-campaign-accent/30 animate-pulse-glow">
+                <span class="text-5xl md:text-7xl font-heading font-black text-white tracking-tighter drop-shadow-lg text-sweep">
+                    11555
+                </span>
+            </div>
+
+            <p class="text-lg text-gray-300 font-light max-w-md mx-auto italic mb-8">
+                "Renovação com coragem. Juntos por um estado mais forte e oportunidades para todos."
+            </p>
+
+            <!-- BOTÕES DE AÇÃO PRINCIPAIS (ESTILO LINKTREE) -->
+            <div class="flex flex-col gap-4 w-full max-w-md mx-auto">
+                <!-- Botão Destaque 1 -->
+                <a href="#propostas" class="bg-gradient-to-r from-campaign-primary to-blue-600 text-white font-bold text-lg py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(30,64,175,0.5)] hover:shadow-[0_0_30px_rgba(30,64,175,0.8)] hover:-translate-y-1 transition-all flex items-center justify-between group">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-list-check text-xl"></i> Conheça as Propostas</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </a>
+
+                <!-- Botão Destaque 2 (WhatsApp) -->
+                <a href="#" class="bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-bold text-lg py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] hover:-translate-y-1 transition-all flex items-center justify-between group">
+                    <span class="flex items-center gap-3"><i class="fa-brands fa-whatsapp text-2xl"></i> Falar com a Equipe</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- MOBILIZAÇÃO RÁPIDA (BOTÕES SECUNDÁRIOS PREMIUM) -->
+        <section class="mb-16 reveal">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md md:max-w-2xl mx-auto">
+                
+                <!-- Botão Agenda -->
+                <a href="#agenda" class="action-btn btn-agenda text-white py-4 px-5 rounded-2xl flex items-center gap-4 group cursor-pointer">
+                    <div class="bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 p-3 rounded-xl text-campaign-accent shadow-[0_0_15px_rgba(251,191,36,0.15)] group-hover:bg-campaign-accent group-hover:text-campaign-dark transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3">
+                        <i class="fa-regular fa-calendar-days text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">Acompanhe a</span>
+                        <span class="text-lg font-bold leading-none text-gray-100 group-hover:text-white transition-colors">Agenda Local</span>
+                    </div>
+                </a>
+
+                <!-- Botão Materiais -->
+                <a href="#materiais" class="action-btn btn-materiais text-white py-4 px-5 rounded-2xl flex items-center gap-4 group cursor-pointer">
+                    <div class="bg-gradient-to-br from-blue-400/20 to-blue-600/20 p-3 rounded-xl text-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.15)] group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 transform group-hover:scale-110 group-hover:-rotate-3">
+                        <i class="fa-solid fa-download text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">Baixe nossos</span>
+                        <span class="text-lg font-bold leading-none text-gray-100 group-hover:text-white transition-colors">Materiais Digitais</span>
+                    </div>
+                </a>
+
+                <!-- Botão Grupo VIP -->
+                <a href="#" class="action-btn btn-grupo text-white py-4 px-5 rounded-2xl flex items-center gap-4 group cursor-pointer">
+                    <div class="bg-gradient-to-br from-green-400/20 to-green-600/20 p-3 rounded-xl text-campaign-secondary shadow-[0_0_15px_rgba(16,185,129,0.15)] group-hover:bg-campaign-secondary group-hover:text-white transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3">
+                        <i class="fa-solid fa-users text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">Participe do</span>
+                        <span class="text-lg font-bold leading-none text-gray-100 group-hover:text-white transition-colors">Grupo de Apoiadores</span>
+                    </div>
+                </a>
+
+                <!-- Botão Voluntário -->
+                <a href="#" class="action-btn btn-voluntario text-white py-4 px-5 rounded-2xl flex items-center gap-4 group cursor-pointer">
+                    <div class="bg-gradient-to-br from-purple-400/20 to-purple-600/20 p-3 rounded-xl text-purple-400 shadow-[0_0_15px_rgba(192,132,252,0.15)] group-hover:bg-purple-500 group-hover:text-white transition-all duration-300 transform group-hover:scale-110 group-hover:-rotate-3">
+                        <i class="fa-solid fa-hand-holding-heart text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">Faça a diferença</span>
+                        <span class="text-lg font-bold leading-none text-gray-100 group-hover:text-white transition-colors">Seja Voluntário</span>
+                    </div>
+                </a>
+
+                <!-- Botão Pix (Destaque Maior) -->
+                <a href="#" class="action-btn btn-donate md:col-span-2 text-white py-5 px-6 rounded-2xl flex items-center justify-center gap-4 group cursor-pointer overflow-hidden mt-2">
+                    <!-- Fundo animado no hover -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-campaign-primary/60 via-campaign-secondary/60 to-campaign-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[length:200%_auto] animate-[sweep_3s_linear_infinite]"></div>
+                    
+                    <div class="relative z-10 flex items-center gap-4">
+                        <div class="bg-white/10 p-3 rounded-full text-campaign-secondary border border-campaign-secondary/50 group-hover:bg-campaign-secondary group-hover:text-white group-hover:border-white transition-all duration-300">
+                            <i class="fa-brands fa-pix text-2xl group-hover:rotate-12 transition-transform duration-300"></i>
+                        </div>
+                        <div class="flex flex-col text-left">
+                            <span class="text-sm text-gray-300 font-light leading-tight tracking-widest uppercase">Doação Legal (TSE)</span>
+                            <span class="text-xl font-black leading-tight text-white drop-shadow-lg">Apoie a Campanha</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- QUEM É O CANDIDATO -->
+        <section id="quem-sou" class="mb-20 reveal pt-10">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-heading font-bold text-white uppercase"><span class="text-campaign-secondary">A Força</span> do Nosso Povo</h2>
+                <div class="w-16 h-1 bg-campaign-accent mx-auto mt-4 rounded-full"></div>
+            </div>
+            
+            <div class="glass-panel rounded-3xl p-6 md:p-10 relative overflow-hidden">
+                <!-- Elemento decorativo de fundo -->
+                <i class="fa-solid fa-quote-right absolute top-4 right-4 text-6xl text-white/5"></i>
+                
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    <div class="w-full md:w-1/3">
+                        <img src="https://placehold.co/300x400/10b981/ffffff?text=TRAJETÓRIA" alt="História" class="rounded-xl w-full object-cover shadow-lg border border-white/10">
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <h3 class="text-2xl font-bold text-campaign-accent mb-4">De onde venho, para onde vamos</h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            Nascido no interior, filho de professores e trabalhador desde cedo. Minha história se confunde com a de milhares de brasileiros que acordam cedo para construir um futuro melhor.
+                        </p>
+                        <p class="text-gray-300 leading-relaxed mb-6">
+                            Com mais de 15 anos de atuação comunitária, compreendi que a política verdadeira se faz ouvindo as pessoas nas ruas, entendendo suas dores e buscando soluções práticas, sem promessas vazias.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex items-center gap-3">
+                                <i class="fa-solid fa-hands-holding-circle text-campaign-secondary text-xl"></i>
+                                <span class="font-medium text-sm">Trabalho</span>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex items-center gap-3">
+                                <i class="fa-solid fa-shield-halved text-campaign-secondary text-xl"></i>
+                                <span class="font-medium text-sm">Transparência</span>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex items-center gap-3">
+                                <i class="fa-solid fa-handshake text-campaign-secondary text-xl"></i>
+                                <span class="font-medium text-sm">Compromisso</span>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex items-center gap-3">
+                                <i class="fa-solid fa-leaf text-campaign-secondary text-xl"></i>
+                                <span class="font-medium text-sm">Renovação</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROPOSTAS -->
+        <section id="propostas" class="mb-20 reveal pt-10">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-heading font-bold text-white uppercase"><span class="text-campaign-accent">Minhas</span> Bandeiras</h2>
+                <div class="w-16 h-1 bg-campaign-primary mx-auto mt-4 rounded-full"></div>
+                <p class="text-gray-400 mt-4 max-w-xl mx-auto">Ideias concretas para transformar a realidade do nosso estado com responsabilidade e inovação.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card Proposta 1 -->
+                <div class="glass-panel p-6 rounded-2xl group hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform group-hover:bg-blue-500 group-hover:text-white">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Saúde Ágil</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Lutar por mutirões contínuos para zerar filas de exames e defender a ampliação de repasses para hospitais filantrópicos.
+                    </p>
+                </div>
+
+                <!-- Card Proposta 2 -->
+                <div class="glass-panel p-6 rounded-2xl group hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-yellow-500/20 text-yellow-400 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform group-hover:bg-yellow-500 group-hover:text-white">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Educação e Futuro</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Foco no ensino técnico integrado ao médio, preparando nossos jovens diretamente para o mercado de trabalho local.
+                    </p>
+                </div>
+
+                <!-- Card Proposta 3 -->
+                <div class="glass-panel p-6 rounded-2xl group hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-gray-500/20 text-gray-300 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform group-hover:bg-gray-500 group-hover:text-white">
+                        <i class="fa-solid fa-shield-cat"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Segurança Integrada</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Defesa de mais tecnologia (câmeras de monitoramento) e valorização das forças policiais no estado.
+                    </p>
+                </div>
+
+                <!-- Card Proposta 4 -->
+                <div class="glass-panel p-6 rounded-2xl group hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-green-500/20 text-green-400 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform group-hover:bg-green-500 group-hover:text-white">
+                        <i class="fa-solid fa-industry"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Emprego e Renda</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Desburocratização para o pequeno empreendedor e incentivos para indústrias se instalarem no interior do estado.
+                    </p>
+                </div>
+
+                <!-- Card Proposta 5 -->
+                <div class="glass-panel p-6 rounded-2xl group hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform group-hover:bg-orange-500 group-hover:text-white">
+                        <i class="fa-solid fa-road"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Infraestrutura</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Garantir recursos federais para manutenção de rodovias e estradas vicinais, facilitando o escoamento da produção.
+                    </p>
+                </div>
+
+                <!-- Card Proposta 6 -->
+                <div class="glass-panel p-6 rounded-2xl group hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform group-hover:bg-purple-500 group-hover:text-white">
+                        <i class="fa-solid fa-city"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Apoio aos Municípios</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Um mandato municipalista: estar presente nas cidades, destinando emendas para quem mais precisa na ponta.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPROMISSOS (TIMELINE VERTICAL) -->
+        <section class="mb-20 reveal pt-10">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-heading font-bold text-white uppercase">Meus <span class="text-campaign-secondary">Compromissos</span></h2>
+                <div class="w-16 h-1 bg-campaign-secondary mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="max-w-2xl mx-auto pl-4 md:pl-0">
+                <div class="relative border-l-2 border-campaign-primary/50 ml-3 md:ml-6 space-y-12">
+                    
+                    <!-- Item Timeline 1 -->
+                    <div class="relative pl-8 md:pl-12 reveal">
+                        <div class="absolute -left-[11px] top-1 w-5 h-5 bg-campaign-dark border-4 border-campaign-secondary rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+                        <div class="glass-panel p-5 rounded-xl">
+                            <h4 class="text-lg font-bold text-campaign-secondary mb-1">Gabinete Transparente</h4>
+                            <p class="text-sm text-gray-300">Prestação de contas mensal detalhada de todos os gastos em redes sociais e site oficial. O dinheiro é do povo.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item Timeline 2 -->
+                    <div class="relative pl-8 md:pl-12 reveal">
+                        <div class="absolute -left-[11px] top-1 w-5 h-5 bg-campaign-dark border-4 border-campaign-accent rounded-full shadow-[0_0_10px_rgba(251,191,36,0.8)]"></div>
+                        <div class="glass-panel p-5 rounded-xl">
+                            <h4 class="text-lg font-bold text-campaign-accent mb-1">Presença Constante</h4>
+                            <p class="text-sm text-gray-300">Não serei deputado de época de eleição. Realizaremos o "Gabinete Itinerante", rodando as cidades durante todo o mandato.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item Timeline 3 -->
+                    <div class="relative pl-8 md:pl-12 reveal">
+                        <div class="absolute -left-[11px] top-1 w-5 h-5 bg-campaign-dark border-4 border-blue-400 rounded-full shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
+                        <div class="glass-panel p-5 rounded-xl">
+                            <h4 class="text-lg font-bold text-blue-400 mb-1">Voto Independente</h4>
+                            <p class="text-sm text-gray-300">Meu único patrão é você. Votarei a favor do que for bom para o Estado e contra qualquer aumento de impostos.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ESTATÍSTICAS / CONTADORES (Prova Social) -->
+        <section class="mb-20 reveal bg-gradient-to-r from-campaign-primary/20 to-campaign-dark border border-white/10 rounded-3xl p-8 shadow-xl">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div>
+                    <div class="text-4xl md:text-5xl font-heading font-black text-campaign-accent mb-2 counter" data-target="144">0</div>
+                    <div class="text-sm uppercase tracking-wider text-gray-400 font-medium">Cidades Visitadas</div>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-heading font-black text-campaign-secondary mb-2 counter" data-target="35">0</div>
+                    <div class="text-sm uppercase tracking-wider text-gray-400 font-medium">Projetos Desenhados</div>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-heading font-black text-white mb-2 counter" data-target="5000">+</div>
+                    <div class="text-sm uppercase tracking-wider text-gray-400 font-medium">Apoiadores no Zap</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AGENDA DE EVENTOS -->
+        <section id="agenda" class="mb-20 reveal pt-10">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-heading font-bold text-white uppercase"><i class="fa-regular fa-calendar-check text-campaign-primary mr-2"></i>Agenda <span class="text-gray-400 text-xl font-normal lowercase">dos próximos dias</span></h2>
+                </div>
+                <a href="#" class="text-campaign-accent text-sm hover:underline flex items-center gap-1">Ver agenda completa <i class="fa-solid fa-angle-right"></i></a>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Evento 1 -->
+                <div class="glass-panel rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-l-4 border-l-campaign-secondary">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-white/10 text-center rounded-lg p-2 min-w-[70px]">
+                            <span class="block text-xs text-campaign-secondary uppercase font-bold">OUT</span>
+                            <span class="block text-2xl font-black text-white">15</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-lg">Encontro com Lideranças</h4>
+                            <p class="text-sm text-gray-400"><i class="fa-solid fa-location-dot mr-1"></i> Associação de Moradores, Centro - Capital</p>
+                            <p class="text-sm text-gray-400"><i class="fa-regular fa-clock mr-1"></i> 19:00h</p>
+                        </div>
+                    </div>
+                    <a href="#" class="w-full md:w-auto text-center px-4 py-2 bg-white/5 hover:bg-campaign-secondary hover:text-white text-campaign-secondary border border-campaign-secondary rounded-lg text-sm font-medium transition-colors">
+                        Confirmar Presença
+                    </a>
+                </div>
+
+                <!-- Evento 2 -->
+                <div class="glass-panel rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-l-4 border-l-campaign-primary">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-white/10 text-center rounded-lg p-2 min-w-[70px]">
+                            <span class="block text-xs text-campaign-primary uppercase font-bold">OUT</span>
+                            <span class="block text-2xl font-black text-white">18</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-lg">Caminhada no Comércio</h4>
+                            <p class="text-sm text-gray-400"><i class="fa-solid fa-location-dot mr-1"></i> Av. Principal - Cidade do Interior</p>
+                            <p class="text-sm text-gray-400"><i class="fa-regular fa-clock mr-1"></i> 09:00h</p>
+                        </div>
+                    </div>
+                    <a href="#" class="w-full md:w-auto text-center px-4 py-2 bg-white/5 hover:bg-campaign-primary hover:text-white text-campaign-primary border border-campaign-primary rounded-lg text-sm font-medium transition-colors">
+                        Confirmar Presença
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- MATERIAIS PARA DOWNLOAD / COMPARTILHAMENTO -->
+        <section id="materiais" class="mb-20 reveal">
+            <div class="glass-panel rounded-3xl p-8 text-center bg-gradient-to-b from-campaign-primary/10 to-transparent">
+                <i class="fa-solid fa-bullhorn text-4xl text-campaign-accent mb-4"></i>
+                <h2 class="text-2xl font-heading font-bold text-white mb-2">Faça parte da nossa rede</h2>
+                <p class="text-gray-400 mb-8 max-w-md mx-auto text-sm">Baixe os materiais de campanha e ajude a divulgar nossas ideias para seus amigos e familiares.</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button class="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors group">
+                        <i class="fa-solid fa-image text-2xl text-blue-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-xs font-medium">Artes para Zap</span>
+                    </button>
+                    <button class="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors group">
+                        <i class="fa-solid fa-file-pdf text-2xl text-red-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-xs font-medium">Propostas PDF</span>
+                    </button>
+                    <button class="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-[#25D366]/20 rounded-xl border border-white/10 transition-colors group">
+                        <i class="fa-brands fa-whatsapp text-2xl text-[#25D366] mb-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-xs font-medium">Compartilhar</span>
+                    </button>
+                    <button onclick="copyLink()" class="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors group">
+                        <i class="fa-solid fa-link text-2xl text-gray-300 mb-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-xs font-medium" id="copy-text">Copiar Link</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER INSTITUCIONAL -->
+    <footer class="relative z-10 border-t border-white/10 bg-campaign-dark pb-8 pt-12">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col items-center text-center">
+            
+            <div class="flex gap-4 mb-8">
+                <a href="#" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-campaign-primary hover:text-white transition-colors border border-white/10 text-xl"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors border border-white/10 text-xl"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-black hover:text-white transition-colors border border-white/10 text-xl"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors border border-white/10 text-xl"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+
+            <h3 class="font-heading font-bold text-xl uppercase mb-1 text-white">João Silva</h3>
+            <p class="text-campaign-secondary font-medium text-sm mb-4">Pré-Candidato a Deputado Federal - Partido (SIGLA)</p>
+            
+            <div class="max-w-xl p-4 bg-black/30 rounded-lg border border-white/5 text-xs text-gray-500 leading-relaxed mb-6">
+                <strong>Aviso Institucional:</strong> Esta é uma página de caráter informativo e de apresentação pessoal. O conteúdo está adequado à legislação eleitoral vigente (Lei nº 9.504/97) referente ao período de pré-campanha. Não há pedido explícito de voto.
+            </div>
+
+            <p class="text-xs text-gray-600">
+                &copy; 2026 - João Silva. Todos os direitos reservados.<br>
+                Produzido pela Equipe de Comunicação.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Lógica de Copiar Link
+        function copyLink() {
+            const url = window.location.href;
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = url;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            const copyText = document.getElementById('copy-text');
+            copyText.innerHTML = '<span class="text-green-400">Copiado!</span>';
+            setTimeout(() => {
+                copyText.innerText = 'Copiar Link';
+            }, 2000);
+        }
+
+        // SCROLL REVEAL ANIMATION
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+
+        // COUNTER ANIMATION
+        let animatedCounters = false;
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            const speed = 200; // menor = mais rápido
+
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute('data-target');
+                    let count = +counter.innerText.replace('+', '');
+                    const inc = target / speed;
+
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(updateCount, 15);
+                    } else {
+                        counter.innerText = target + (target > 1000 ? '+' : '');
+                    }
+                };
+                updateCount();
+            });
+        }
+
+        window.addEventListener("scroll", () => {
+            if(!animatedCounters && window.scrollY > 500) {
+                animateCounters();
+                animatedCounters = true;
+            }
+        });
+
+        // ==========================================
+        // THREE.JS - PRELOADER (Urna Abstrata 3D)
+        // ==========================================
+        const initPreloader = () => {
+            const container = document.getElementById('preloader-3d-canvas');
+            const scene = new THREE.Scene();
+            
+            // Camera
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+            camera.position.y = 1;
+
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Luzes
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0x10b981, 2, 50); // Luz verde
+            pointLight.position.set(2, 3, 4);
+            scene.add(pointLight);
+
+            const pointLight2 = new THREE.PointLight(0xfbbf24, 2, 50); // Luz amarela
+            pointLight2.position.set(-2, -1, 4);
+            scene.add(pointLight2);
+
+            // Objeto Abstrato (Representando a Urna)
+            const urnaGroup = new THREE.Group();
+
+            // Base Escura
+            const baseGeo = new THREE.BoxGeometry(2.5, 1.5, 2);
+            const baseMat = new THREE.MeshStandardMaterial({ 
+                color: 0x0f172a, 
+                roughness: 0.2, 
+                metalness: 0.8,
+                transparent: true,
+                opacity: 0.9
+            });
+            const base = new THREE.Mesh(baseGeo, baseMat);
+            urnaGroup.add(base);
+
+            // Tela Brilhante (Painel Frontal)
+            const screenGeo = new THREE.PlaneGeometry(1.8, 1);
+            const screenMat = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.8
+            });
+            const screen = new THREE.Mesh(screenGeo, screenMat);
+            screen.position.set(0, 0.2, 1.01);
+            screen.rotation.x = -0.1; // Leve inclinação
+            urnaGroup.add(screen);
+
+            // Teclado Abstrato (Grade de pontinhos brilhantes)
+            for(let i=0; i<3; i++) {
+                for(let j=0; j<4; j++) {
+                    const btnGeo = new THREE.BoxGeometry(0.2, 0.1, 0.2);
+                    const isConfirm = (i===2 && j===3);
+                    const btnMat = new THREE.MeshBasicMaterial({ color: isConfirm ? 0x10b981 : 0x334155 });
+                    const btn = new THREE.Mesh(btnGeo, btnMat);
+                    btn.position.set(-0.6 + (i * 0.6), -0.5, 1.2 - (j * 0.1));
+                    btn.rotation.x = 0.2;
+                    urnaGroup.add(btn);
+                }
+            }
+
+            scene.add(urnaGroup);
+
+            // Partículas flutuantes ao redor
+            const particlesGeo = new THREE.BufferGeometry();
+            const particlesCount = 100;
+            const posArray = new Float32Array(particlesCount * 3);
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMat = new THREE.PointsMaterial({
+                size: 0.05,
+                color: 0xfbbf24,
+                transparent: true,
+                opacity: 0.6
+            });
+            const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particlesMesh);
+
+            // Animação do Preloader
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                urnaGroup.rotation.y += 0.01;
+                urnaGroup.position.y = Math.sin(Date.now() * 0.002) * 0.2; // Efeito flutuando
+                
+                particlesMesh.rotation.y -= 0.002;
+                particlesMesh.rotation.x += 0.001;
+
+                renderer.render(scene, camera);
+            };
+            animate();
+
+            // Resize handle
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        };
+
+        // ==========================================
+        // THREE.JS - MAIN BACKGROUND PARTICLES
+        // ==========================================
+        const initBgParticles = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            const particlesGeo = new THREE.BufferGeometry();
+            const particlesCount = 300; // Sutil
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15; // Espalhar pelo espaço
+            }
+
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            // Textura abstrata circular
+            const canvas = document.createElement('canvas');
+            canvas.width = 16;
+            canvas.height = 16;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(8, 8, 0, 8, 8, 8);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            context.fillStyle = gradient;
+            context.fillRect(0,0,16,16);
+            const texture = new THREE.CanvasTexture(canvas);
+
+            const particlesMat = new THREE.PointsMaterial({
+                size: 0.08,
+                map: texture,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particlesMesh);
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+                particlesMesh.rotation.y -= 0.0005;
+                particlesMesh.rotation.x -= 0.0002;
+                renderer.render(scene, camera);
+            };
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // ==========================================
+        // INICIALIZAÇÃO DA PÁGINA
+        // ==========================================
+        window.onload = () => {
+            initPreloader();
+            initBgParticles();
+
+            // Simula o tempo de carregamento da urna e transição
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                const mainContent = document.getElementById('main-content');
+                
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    mainContent.classList.remove('opacity-0');
+                    reveal(); // Força verificação de animação no primeiro view
+                }, 1000); // tempo do fadeout do preloader
+            }, 3500); // Tempo total do preloader (3.5s)
+        };
+
+    </script>
+</body>
+</html>
